@@ -1,73 +1,71 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import List from "@mui/material/List";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import Collapse from "@mui/material/Collapse";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import WorkIcon from "@mui/icons-material/Work";
-import AddIcon from "@mui/icons-material/Add";
-import ListAltIcon from "@mui/icons-material/ListAlt";
-import ExitToAppIcon from "@mui/icons-material/ExitToApp";
-import ExpandLess from "@mui/icons-material/ExpandLess";
-import ExpandMore from "@mui/icons-material/ExpandMore";
 
 export default function Sidebar({ logout }) {
   const [jobsOpen, setJobsOpen] = useState(false);
 
   return (
     <div className="fixed left-0 top-0 h-full w-64 bg-gray-800 text-white flex flex-col py-8">
-      <List component="nav" sx={{ color: "white" }}>
+      <ul className="flex flex-col space-y-2">
         {/* Dashboard */}
-        <ListItemButton component={Link} to="/dashboard">
-          <ListItemIcon>
-            <DashboardIcon sx={{ color: "white" }} />
-          </ListItemIcon>
-          <ListItemText primary="Dashboard" />
-        </ListItemButton>
+        <li>
+          <Link
+            to="/dashboard"
+            className="flex items-center px-4 py-2 hover:bg-gray-700 rounded"
+          >
+            <span className="mr-3">📊</span>
+            <span>Dashboard</span>
+          </Link>
+        </li>
 
         {/* Jobs */}
-        <ListItemButton onClick={() => setJobsOpen(!jobsOpen)}>
-          <ListItemIcon>
-            <WorkIcon sx={{ color: "white" }} />
-          </ListItemIcon>
-          <ListItemText primary="Jobs" />
-          {jobsOpen ? <ExpandLess /> : <ExpandMore />}
-        </ListItemButton>
-        <Collapse in={jobsOpen} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding>
-            <ListItemButton component={Link} to="/add-job" sx={{ pl: 4 }}>
-              <ListItemIcon>
-                <AddIcon sx={{ color: "white" }} />
-              </ListItemIcon>
-              <ListItemText primary="Add Job" />
-            </ListItemButton>
-            <ListItemButton component={Link} to="/jobs" sx={{ pl: 4 }}>
-              <ListItemIcon>
-                <ListAltIcon sx={{ color: "white" }} />
-              </ListItemIcon>
-              <ListItemText primary="Jobs List" />
-            </ListItemButton>
-          </List>
-        </Collapse>
+        <li>
+          <button
+            onClick={() => setJobsOpen(!jobsOpen)}
+            className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-700 rounded"
+          >
+            <span className="flex items-center">
+              <span className="mr-3">💼</span>
+              <span>Jobs</span>
+            </span>
+            <span>{jobsOpen ? "▲" : "▼"}</span>
+          </button>
+
+          {jobsOpen && (
+            <ul className="ml-6 mt-2 space-y-1">
+              <li>
+                <Link
+                  to="/add-job"
+                  className="flex items-center px-3 py-2 hover:bg-gray-700 rounded"
+                >
+                  <span className="mr-3">➕</span>
+                  <span>Add Job</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/jobs"
+                  className="flex items-center px-3 py-2 hover:bg-gray-700 rounded"
+                >
+                  <span className="mr-3">📋</span>
+                  <span>Jobs List</span>
+                </Link>
+              </li>
+            </ul>
+          )}
+        </li>
 
         {/* Logout */}
-        <ListItemButton
-          sx={{
-            mt: "auto",
-            bgcolor: "error.main",
-            color: "white",
-            "&:hover": { bgcolor: "error.dark" },
-          }}
-          onClick={logout}
-        >
-          <ListItemIcon>
-            <ExitToAppIcon sx={{ color: "white" }} />
-          </ListItemIcon>
-          <ListItemText primary="Logout" />
-        </ListItemButton>
-      </List>
+        <li className="mt-auto">
+          <button
+            onClick={logout}
+            className="w-full flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 rounded"
+          >
+            <span className="mr-3">🚪</span>
+            <span>Logout</span>
+          </button>
+        </li>
+      </ul>
     </div>
   );
 }

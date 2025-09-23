@@ -1,7 +1,7 @@
 // store/companySlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import apiInstance from "../../src/utils/api";
-import { endpoints } from "../utils/endpoint";
+import apiInstance from "../../utils/api";
+import { endpoints } from "../../utils/endpoint";
 
 // Async Thunks
 export const createCompany = createAsyncThunk(

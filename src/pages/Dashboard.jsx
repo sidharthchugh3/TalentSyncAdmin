@@ -12,9 +12,9 @@ export default function Dashboard() {
   const [jobs, setJobs] = useState([]);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    API.get("/admin/jobs").then(res => setJobs(res.data.data || []));
-  }, []);
+  // useEffect(() => {
+  //   API.get("/admin/jobs").then(res => setJobs(res.data.data || []));
+  // }, []);
 
   function logout() {
     removeToken();

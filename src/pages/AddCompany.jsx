@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { PlusCircle, Building2, Globe, Mail, Phone, Linkedin, FileText, Users, MapPin, Info, Loader2, CheckCircle } from "lucide-react";
-import { createCompany } from "../store/CompanySlice";
+import { createCompany } from "../store/slices/CompanySlice";
 import { useAppDispatch } from "../store/hook/hook";
 import { toast } from "react-toastify";
 
@@ -122,9 +122,8 @@ export default function CreateCompany() {
           <div className="relative">
             <div className="absolute left-3 top-1/2 -translate-y-1/2">{getFieldIcon(key)}</div>
             <select
-              className={`w-full pl-10 pr-3 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors ${
-                errors[key] ? "border-red-500" : "border-gray-300"
-              }`}
+              className={`w-full pl-10 pr-3 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors ${errors[key] ? "border-red-500" : "border-gray-300"
+                }`}
               value={value || ""}
               onChange={(e) => setFormData((prev) => ({ ...prev, [key]: e.target.value }))}
             >
@@ -191,9 +190,8 @@ export default function CreateCompany() {
           <input
             type={key === "companyEmail" ? "email" : key === "companyPhone" ? "tel" : "text"}
             placeholder={`Enter ${fieldName.toLowerCase()}`}
-            className={`w-full pl-10 pr-3 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors ${
-              errors[key] ? "border-red-500" : "border-gray-300"
-            }`}
+            className={`w-full pl-10 pr-3 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors ${errors[key] ? "border-red-500" : "border-gray-300"
+              }`}
             value={value || ""}
             onChange={(e) => setFormData((prev) => ({ ...prev, [key]: e.target.value }))}
           />

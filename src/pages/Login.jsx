@@ -2,29 +2,26 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../utils/api";
 import { setToken } from "../utils/auth";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../store/slices/authSlice";
 
 export default function Login() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const navigate = useNavigate();
 
   // Login.jsx
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const res = await API.post("/auth/login", { email, password });
-
-    // ✅ Correct token path
-    setToken(res.data.data.accessToken);
-
-    console.log("Stored token:", localStorage.getItem("token")); // should print your JWT
-
-    navigate("/dashboard");
-  } catch (err) {
-    setError(err.response?.data?.message || "Login failed");
-  }
-};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await dispatch(loginUser({ email, password })).unwrap();
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.response?.data?.message || "Login failed");
+    }
+  };
 
 
 
