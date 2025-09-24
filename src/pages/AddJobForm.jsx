@@ -1,269 +1,156 @@
-// src/pages/AddJobPage.jsx
-import { useState } from "react";
-import axios from "axios";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createJob } from "../store/slices/JobsSlice";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
-export default function AddJobPage({ onAddJob }) {
-  const [form, setForm] = useState({
-    title: "",
-    department: "",
-    roleCategory: "",
-    employmentType: "full_time",
-    location: "",
-    salaryMin: "",
-    salaryMax: "",
-    salaryCurrency: "INR",
-    description: "",
-    requirements: [""],
-    status: "pending_review",
-    verificationLevelRequired: "standard",
-  });
+const JobSchema = z.object({
+  title: z.string().min(3, "Job title is required"),
+  department: z.string().min(2, "Department is required"),
+  roleCategory: z.string().min(2, "Role category is required"),
+  employmentType: z.enum(["full_time", "part_time", "internship", "contract"])
+    .refine((val) => !!val, { message: "Employment type is required" }),
+  location: z.string().min(2, "Location is required"),
+  salaryMin: z.string().min(1, "Minimum salary is required"),
+  salaryMax: z.string().min(1, "Maximum salary is required"),
+  currency: z.string().min(1, "Currency is required"),
+  description: z.string().min(10, "Description is required"),
+  requirements: z.string().min(5, "At least one requirement is required"),
+});
 
+const CreateJobs = () => {
+  const { register, handleSubmit, formState: { errors } } = useForm({ resolver: zodResolver(JobSchema) });
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
-  // Handle form input
-  function handleChange(e) {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-  }
-
-  // Handle dynamic requirements
-  function handleRequirementChange(index, value) {
-    const updated = [...form.requirements];
-    updated[index] = value;
-    setForm((prev) => ({ ...prev, requirements: updated }));
-  }
-
-  function addRequirement() {
-    setForm((prev) => ({ ...prev, requirements: [...prev.requirements, ""] }));
-  }
-
-  function removeRequirement(index) {
-    setForm((prev) => ({
-      ...prev,
-      requirements: prev.requirements.filter((_, i) => i !== index),
-    }));
-  }
-
-  async function handleSave() {
-    setLoading(true);
-    setError("");
-    setSuccess("");
-
-    const jobData = {
-      title: form.title,
-      department: form.department,
-      roleCategory: form.roleCategory,
-      employmentType: form.employmentType,
-      location: form.location,
-      salaryRange: {
-        min: Number(form.salaryMin),
-        max: Number(form.salaryMax),
-        currency: form.salaryCurrency,
-      },
-      description: form.description,
-      requirements: form.requirements.filter((r) => r.trim() !== ""),
-      status: form.status,
-      verificationLevelRequired: form.verificationLevelRequired,
-    };
-
+  const onSubmit = async (data) => {
     try {
-      // Get token (assuming it's stored in localStorage after login)
-      const res = await API.post("/jobs/create", jobData);
+      setLoading(true);
 
+      const payload = {
+        title: data.title,
+        department: data.department,
+        roleCategory: data.roleCategory,
+        employmentType: data.employmentType,
+        location: data.location,
+        salaryRange: {
+          min: Number(data.salaryMin),
+          max: Number(data.salaryMax),
+          currency: data.currency,
+        },
+        description: data.description,
+        requirements: data.requirements.split(",").map(r => r.trim()),
+      };
 
-      setSuccess("Job created successfully!");
-      onAddJob && onAddJob(res.data); // optional callback
-
-      // Reset form
-      setForm({
-        title: "",
-        department: "",
-        roleCategory: "",
-        employmentType: "full_time",
-        location: "",
-        salaryMin: "",
-        salaryMax: "",
-        salaryCurrency: "INR",
-        description: "",
-        requirements: [""],
-        status: "pending_review",
-        verificationLevelRequired: "standard",
-      });
-    } catch (err) {
-      console.error(err);
-      setError(err.response?.data?.message || "Something went wrong!");
+      await dispatch(createJob(payload)).unwrap();
+      toast.success("Job created successfully!");
+      navigate("/jobs");
+    } catch (error) {
+      toast.error(error.message || "Failed to create job");
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-slate-100 to-blue-50 flex flex-col items-center p-8 mt-4">
-      <h1 className="text-4xl font-extrabold mb-10 text-blue-900 select-none">
-        Add Job
-      </h1>
+    <div className="max-w-4xl mx-auto py-10">
+      <h1 className="text-2xl font-bold mb-6">Create Job</h1>
 
-      <div className="flex-grow w-full max-w-5xl bg-white rounded-3xl shadow-xl border border-blue-100 p-10 grid gap-8">
-        {/* Title */}
-        <input
-          name="title"
-          value={form.title}
-          onChange={handleChange}
-          placeholder="Job Title"
-          className="w-full text-2xl font-semibold px-5 py-4 border rounded-xl bg-gray-50"
-        />
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        {/* Job Title */}
+        <div>
+          <label className="block font-medium">Job Title *</label>
+          <input {...register("title")} className="w-full border rounded p-2" />
+          {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
+        </div>
 
-        {/* Department + Role Category */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <input
-            name="department"
-            value={form.department}
-            onChange={handleChange}
-            placeholder="Department"
-            className="w-full px-5 py-4 border rounded-xl bg-gray-50"
-          />
-          <input
-            name="roleCategory"
-            value={form.roleCategory}
-            onChange={handleChange}
-            placeholder="Role Category"
-            className="w-full px-5 py-4 border rounded-xl bg-gray-50"
-          />
+        {/* Department */}
+        <div>
+          <label className="block font-medium">Department *</label>
+          <input {...register("department")} className="w-full border rounded p-2" />
+          {errors.department && <p className="text-red-500 text-sm">{errors.department.message}</p>}
+        </div>
+
+        {/* Role Category */}
+        <div>
+          <label className="block font-medium">Role Category *</label>
+          <input {...register("roleCategory")} className="w-full border rounded p-2" />
+          {errors.roleCategory && <p className="text-red-500 text-sm">{errors.roleCategory.message}</p>}
         </div>
 
         {/* Employment Type */}
-        <select
-          name="employmentType"
-          value={form.employmentType}
-          onChange={handleChange}
-          className="w-full px-5 py-4 border rounded-xl bg-gray-50"
-        >
-          <option value="full_time">Full Time</option>
-          <option value="part_time">Part Time</option>
-          <option value="internship">Internship</option>
-          <option value="contract">Contract</option>
-        </select>
+        <div>
+          <label className="block font-medium">Employment Type *</label>
+          <select {...register("employmentType")} className="w-full border rounded p-2">
+            <option value="">Select...</option>
+            <option value="full_time">Full-time</option>
+            <option value="part_time">Part-time</option>
+            <option value="internship">Internship</option>
+            <option value="contract">Contract</option>
+          </select>
+          {errors.employmentType && <p className="text-red-500 text-sm">{errors.employmentType.message}</p>}
+        </div>
 
         {/* Location */}
-        <input
-          name="location"
-          value={form.location}
-          onChange={handleChange}
-          placeholder="Location"
-          className="w-full px-5 py-4 border rounded-xl bg-gray-50"
-        />
+        <div>
+          <label className="block font-medium">Location *</label>
+          <input {...register("location")} className="w-full border rounded p-2" />
+          {errors.location && <p className="text-red-500 text-sm">{errors.location.message}</p>}
+        </div>
 
         {/* Salary Range */}
-        <div className="grid grid-cols-3 gap-6">
-          <input
-            type="number"
-            name="salaryMin"
-            value={form.salaryMin}
-            onChange={handleChange}
-            placeholder="Salary Min"
-            className="w-full px-5 py-4 border rounded-xl bg-gray-50"
-          />
-          <input
-            type="number"
-            name="salaryMax"
-            value={form.salaryMax}
-            onChange={handleChange}
-            placeholder="Salary Max"
-            className="w-full px-5 py-4 border rounded-xl bg-gray-50"
-          />
-          <select
-            name="salaryCurrency"
-            value={form.salaryCurrency}
-            onChange={handleChange}
-            className="w-full px-5 py-4 border rounded-xl bg-gray-50"
-          >
-            <option value="INR">INR</option>
-            <option value="USD">USD</option>
-            <option value="EUR">EUR</option>
-          </select>
+        <div className="grid grid-cols-3 gap-4">
+          <div>
+            <label className="block font-medium">Min Salary *</label>
+            <input type="number" {...register("salaryMin")} className="w-full border rounded p-2" />
+            {errors.salaryMin && <p className="text-red-500 text-sm">{errors.salaryMin.message}</p>}
+          </div>
+          <div>
+            <label className="block font-medium">Max Salary *</label>
+            <input type="number" {...register("salaryMax")} className="w-full border rounded p-2" />
+            {errors.salaryMax && <p className="text-red-500 text-sm">{errors.salaryMax.message}</p>}
+          </div>
+          <div>
+            <label className="block font-medium">Currency *</label>
+            <input {...register("currency")} className="w-full border rounded p-2" />
+            {errors.currency && <p className="text-red-500 text-sm">{errors.currency.message}</p>}
+          </div>
         </div>
 
         {/* Description */}
-        <textarea
-          name="description"
-          value={form.description}
-          onChange={handleChange}
-          placeholder="Job Description"
-          rows={5}
-          className="w-full px-5 py-4 border rounded-xl bg-gray-50 resize-none"
-        />
+        <div>
+          <label className="block font-medium">Description *</label>
+          <textarea {...register("description")} rows={4} className="w-full border rounded p-2" />
+          {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
+        </div>
 
         {/* Requirements */}
         <div>
-          <h2 className="text-lg font-semibold mb-3">Requirements</h2>
-          {form.requirements.map((req, idx) => (
-            <div key={idx} className="flex gap-4 mb-3">
-              <input
-                value={req}
-                onChange={(e) => handleRequirementChange(idx, e.target.value)}
-                placeholder={`Requirement ${idx + 1}`}
-                className="flex-1 px-5 py-3 border rounded-xl bg-gray-50"
-              />
-              <button
-                type="button"
-                onClick={() => removeRequirement(idx)}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg"
-              >
-                ✕
-              </button>
-            </div>
-          ))}
-          <button
-            type="button"
-            onClick={addRequirement}
-            className="mt-2 px-5 py-3 bg-green-600 text-white rounded-xl"
-          >
-            + Add Requirement
-          </button>
+          <label className="block font-medium">Requirements *</label>
+          <input
+            {...register("requirements")}
+            placeholder="Comma separated (e.g., React, Node.js, MongoDB)"
+            className="w-full border rounded p-2"
+          />
+          {errors.requirements && <p className="text-red-500 text-sm">{errors.requirements.message}</p>}
         </div>
 
-        {/* Status + Verification Level */}
-        <div className="grid grid-cols-2 gap-6">
-          <select
-            name="status"
-            value={form.status}
-            onChange={handleChange}
-            className="w-full px-5 py-4 border rounded-xl bg-gray-50"
-          >
-            <option value="draft">Draft</option>
-            <option value="pending_review">Pending Review</option>
-            <option value="active">Active</option>
-            <option value="closed">Closed</option>
-            <option value="rejected">Rejected</option>
-            <option value="expired">Expired</option>
-          </select>
-
-          <select
-            name="verificationLevelRequired"
-            value={form.verificationLevelRequired}
-            onChange={handleChange}
-            className="w-full px-5 py-4 border rounded-xl bg-gray-50"
-          >
-            <option value="standard">Standard Verification</option>
-            <option value="strict">Strict Verification</option>
-          </select>
-        </div>
-
-        {/* Save Button */}
+        {/* Submit */}
         <button
-          onClick={handleSave}
+          type="submit"
           disabled={loading}
-          className="w-full py-5 text-white font-extrabold text-xl rounded-3xl bg-blue-600 hover:bg-blue-700 transition disabled:bg-gray-400"
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-50"
         >
-          {loading ? "Saving..." : "Save Job"}
+          {loading ? "Submitting..." : "Create Job"}
         </button>
-
-        {/* Success/Error */}
-        {error && <p className="text-red-600 font-semibold">{error}</p>}
-        {success && <p className="text-green-600 font-semibold">{success}</p>}
-      </div>
+      </form>
     </div>
   );
-}
+};
+
+export default CreateJobs;

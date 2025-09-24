@@ -1,43 +1,37 @@
 // store/companySlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import apiInstance from "../../utils/api";
-import { endpoints } from "../../utils/endpoint";
+import apiInstance from "../../api/apiInstance";
+import { endpoints } from "../../api/endpoint";
 
 // Async Thunks
-export const createCompany = createAsyncThunk(
-  "company/createCompany",
-  async (companyData, { rejectWithValue }) => {
-    try {
-      const res = await apiInstance.post(endpoints.company.createCompany, companyData);
-      return res.data.data;
-    } catch (err) {
-      return rejectWithValue(err.response || "Failed to create company");
-    }
+export const createCompany = createAsyncThunk("company/createCompany", async (companyData, { rejectWithValue }) => {
+  try {
+    const res = await apiInstance.post(endpoints.company.createCompany, companyData);
+    return res.data.data;
+  } catch (err) {
+    return rejectWithValue(err.response || "Failed to create company");
   }
+}
 );
 
-export const fetchAllCompanies = createAsyncThunk(
-  "company/fetchAllCompanies",
-  async (_, { rejectWithValue }) => {
-    try {
-      const res = await apiInstance.post(endpoints.company.fetchAllCompanies);
-      return res.data.data;
-    } catch (err) {
-      return rejectWithValue(err.response || "Failed to fetch companies");
-    }
+export const fetchAllCompanies = createAsyncThunk("company/fetchAllCompanies", async (_, { rejectWithValue }) => {
+  try {
+    const res = await apiInstance.post(endpoints.company.fetchAllCompanies);
+    return res.data.data;
+  } catch (err) {
+    return rejectWithValue(err.response || "Failed to fetch companies");
   }
+}
 );
 
-export const fetchRecruiterCompanies = createAsyncThunk(
-  "company/fetchRecruiterCompanies",
-  async (searchQuery, { rejectWithValue }) => {
-    try {
-      const res = await apiInstance.post(endpoints.company.fetchRecruiterCompanies, { searchQuery });
-      return res.data.data;
-    } catch (err) {
-      return rejectWithValue(err.response || "Failed to fetch companies");
-    }
+export const fetchRecruiterCompanies = createAsyncThunk("company/fetchRecruiterCompanies", async (searchQuery, { rejectWithValue }) => {
+  try {
+    const res = await apiInstance.post(endpoints.company.fetchRecruiterCompanies, { searchQuery });
+    return res.data.data;
+  } catch (err) {
+    return rejectWithValue(err.response || "Failed to fetch companies");
   }
+}
 );
 
 // Initial State
