@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 export default function Sidebar({ logout }) {
   const [jobsOpen, setJobsOpen] = useState(false);
+  const [companyOpen, setCompanyOpen] = useState(false)
 
   return (
     <div className="fixed left-0 top-0 h-full w-64 bg-gray-800 text-white flex flex-col py-8">
@@ -53,6 +54,16 @@ export default function Sidebar({ logout }) {
               </li>
             </ul>
           )}
+          <button
+            onClick={() => setCompanyOpen(!companyOpen)}
+            className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-700 rounded"
+          >
+            <span className="flex items-center">
+              <span className="mr-3">💼</span>
+              <span>Company</span>
+            </span>
+            <span>{companyOpen ? "▲" : "▼"}</span>
+          </button>
         </li>
 
         {/* Logout */}
