@@ -11,7 +11,9 @@ const initialState = {
 
 export const createJob = createAsyncThunk("jobs/createJob", async (jobData, { rejectWithValue }) => {
     try {
+        console.log("jobs data ", jobData)
         const res = await apiInstance.post(endpoints.jobs.createJob, jobData);
+        console.log(res, "res in the slice")
         return res.data.data;
     } catch (err) {
         return rejectWithValue(
