@@ -1,17 +1,38 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
+import {
+  LayoutDashboard,
+  Briefcase,
+  List,
+  PlusCircle,
+  Building2,
+  Info,
+} from "lucide-react";
 
 const Sidebar = () => {
   const [openJobs, setOpenJobs] = useState(false);
   const [openCompany, setOpenCompany] = useState(false);
+  const location = useLocation();
+
+  // Function to highlight active route
+  const isActive = (path) => location.pathname === path;
 
   return (
-    <aside className="w-64 bg-gray-900 text-white fixed top-0 left-0 h-full p-5">
-      <h2 className="text-2xl font-bold mb-6">TalentSync</h2>
-      <ul className="space-y-4 text-xl">
+    <aside className="w-64 bg-gray-900 text-white fixed top-0 left-0 h-full p-6 shadow-lg">
+      {/* Logo / Title */}
+      <h2 className="text-2xl font-bold mb-8 tracking-wide">TalentSync</h2>
+
+      {/* Menu */}
+      <ul className="space-y-2 text-lg">
         {/* Dashboard */}
         <li>
-          <Link to="/" className="hover:text-gray-300">
+          <Link
+            to="/"
+            className={`flex items-center px-4 py-2 rounded-md transition-all duration-200 ${
+              isActive("/") ? "bg-blue-700" : "hover:bg-gray-800"
+            }`}
+          >
+            <LayoutDashboard className="w-5 h-5 mr-3" />
             Dashboard
           </Link>
         </li>
@@ -19,22 +40,39 @@ const Sidebar = () => {
         {/* Jobs Menu */}
         <li>
           <button
-            className="w-full text-left flex justify-between items-center hover:text-gray-300"
+            className="w-full flex items-center justify-between px-4 py-2 rounded-md hover:bg-gray-800 transition-all duration-200"
             onClick={() => setOpenJobs(!openJobs)}
           >
-            Jobs
-            <span>{openJobs ? "▲" : "▼"}</span>
+            <span className="flex items-center">
+              <Briefcase className="w-5 h-5 mr-3" />
+              Jobs
+            </span>
+            <span className="text-sm">{openJobs ? "▼" : "▶"}</span>
           </button>
 
           {openJobs && (
-            <ul className="ml-4 mt-2 space-y-2 text-base">
+            <ul className="ml-6 mt-2 space-y-1 text-base">
               <li>
-                <Link to="/jobs/add" className="hover:text-gray-300">
+                <Link
+                  to="/jobs/add"
+                  className={`flex items-center px-3 py-2 rounded-md transition-all duration-200 ${
+                    isActive("/jobs/add") ? "bg-blue-700" : "hover:bg-gray-800"
+                  }`}
+                >
+                  <PlusCircle className="w-4 h-4 mr-2" />
                   Add Job
                 </Link>
               </li>
               <li>
-                <Link to="/jobs/list" className="hover:text-gray-300">
+                <Link
+                  to="/jobs/list"
+                  className={`flex items-center px-3 py-2 rounded-md transition-all duration-200 ${
+                    isActive("/jobs/list")
+                      ? "bg-blue-700"
+                      : "hover:bg-gray-800"
+                  }`}
+                >
+                  <List className="w-4 h-4 mr-2" />
                   Jobs List
                 </Link>
               </li>
@@ -45,17 +83,28 @@ const Sidebar = () => {
         {/* Company Menu */}
         <li>
           <button
-            className="w-full text-left flex justify-between items-center hover:text-gray-300"
+            className="w-full flex items-center justify-between px-4 py-2 rounded-md hover:bg-gray-800 transition-all duration-200"
             onClick={() => setOpenCompany(!openCompany)}
           >
-            Company
-            <span>{openCompany ? "▲" : "▼"}</span>
+            <span className="flex items-center">
+              <Building2 className="w-5 h-5 mr-3" />
+              Company
+            </span>
+            <span className="text-sm">{openCompany ? "▼" : "▶"}</span>
           </button>
 
           {openCompany && (
-            <ul className="ml-4 mt-2 space-y-2 text-base">
+            <ul className="ml-6 mt-2 space-y-1 text-base">
               <li>
-                <Link to="/recruiter/company" className="hover:text-gray-300">
+                <Link
+                  to="/recruiter/company"
+                  className={`flex items-center px-3 py-2 rounded-md transition-all duration-200 ${
+                    isActive("/recruiter/company")
+                      ? "bg-blue-700"
+                      : "hover:bg-gray-800"
+                  }`}
+                >
+                  <PlusCircle className="w-4 h-4 mr-2" />
                   Add Company
                 </Link>
               </li>
@@ -65,7 +114,13 @@ const Sidebar = () => {
 
         {/* About */}
         <li>
-          <Link to="/about" className="hover:text-gray-300">
+          <Link
+            to="/about"
+            className={`flex items-center px-4 py-2 rounded-md transition-all duration-200 ${
+              isActive("/about") ? "bg-blue-700" : "hover:bg-gray-800"
+            }`}
+          >
+            <Info className="w-5 h-5 mr-3" />
             About
           </Link>
         </li>
