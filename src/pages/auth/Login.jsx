@@ -1,13 +1,24 @@
+import { useDispatch } from "react-redux";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { loginUser } from "../../store/slices/authSlice";
 
 const AdminLogin = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Add your login logic here
-    console.log("Email:", email, "Password:", password);
+  const handleSubmit = async (e) => {
+    try {
+      e.preventDefault();
+      const res = await dispatch(loginUser({ email, password })).unwrap();
+      if (res?.user) {
+        navigate('/')
+      }
+    } catch (error) {
+      console.log(error, "loginerrr")
+    }
   };
 
   return (

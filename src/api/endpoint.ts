@@ -1,7 +1,10 @@
-export const APP_URL = "http://localhost:5000/";
+export const APP_URL = "http://localhost:5000";
 export const endpoints = {
     auth: {
-        registerUser: `${APP_URL}api/auth/register`,
-        loginUser: `${APP_URL}api/auth/login`,
-    }
+        loginUser: `${APP_URL}/api/auth/login`,
+    },
+    jobs: {
+        createJob: `${APP_URL}/api/jobs/create`,
+        fetchAllJobs: `${APP_URL}/api/jobs/alljobs`
+    },
 }
