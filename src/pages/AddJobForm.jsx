@@ -28,33 +28,39 @@ const CreateJobs = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  const onSubmit = async (data) => {
-    try {
-      setLoading(true);
-      const payload = {
-        title: data.title,
-        department: data.department,
-        roleCategory: data.roleCategory,
-        employmentType: data.employmentType,
-        location: data.location,
-        salaryRange: {
-          min: Number(data.salaryMin),
-          max: Number(data.salaryMax),
-          currency: data.currency,
-        },
-        description: data.description,
-        requirements: data.requirements.split(",").map(r => r.trim()),
-      };
+ const onSubmit = async (data) => {
+  try {
+    setLoading(true);
+    const payload = {
+      title: data.title,
+      department: data.department,
+      roleCategory: data.roleCategory,
+      employmentType: data.employmentType,
+      location: data.location,
+      salaryRange: {
+        min: Number(data.salaryMin),
+        max: Number(data.salaryMax),
+        currency: data.currency,
+      },
+      description: data.description,
+      requirements: data.requirements.split(",").map((r) => r.trim()),
+    };
 
-      await dispatch(createJob(payload)).unwrap();
-      toast.success("Job created successfully!");
-      navigate("/jobs/list");
-    } catch (error) {
-      toast.error(error.message || "Failed to create job");
-    } finally {
-      setLoading(false);
-    }
-  };
+    await dispatch(createJob(payload)).unwrap();
+    
+    toast.success("Job Created Successfully!", { autoClose: 5000 }); // autoClose after 5s
+    
+    setTimeout(() => {
+      navigate("/dashboard"); // redirect to dashboard after 5s
+    }, 5000);
+
+  } catch (error) {
+    toast.error(error.message || "Failed to create job");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="max-w-4xl mx-auto py-10">
