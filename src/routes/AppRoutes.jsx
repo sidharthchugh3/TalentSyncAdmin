@@ -10,6 +10,7 @@ import Layout from "../components/ui/Layout";
 import Login from "../pages/auth/Login";
 import Dashboard from "../pages/Dashboard";
 import ProtectedRoute from "./ProtectedRoutes";
+import Profile from "../pages/profile/Profile";
 
 function AppRoutes() {
     return (
@@ -23,6 +24,7 @@ function AppRoutes() {
                     </Route>
                     <Route path="recruiter" element={<RecruiterOnboarding />} />
                     <Route path="recruiter/company" element={<AddCompany />} />
+                    <Route path="/profile" element={<Profile />} />
                 </Route>
             </Route>
             <Route path="/login" element={<Login />} />
