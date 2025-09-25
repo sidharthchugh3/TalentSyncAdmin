@@ -48,11 +48,12 @@ const CreateJobs = () => {
 
     await dispatch(createJob(payload)).unwrap();
     
-    toast.success("Job Created Successfully!", { autoClose: 5000 }); // autoClose after 5s
-    
-    setTimeout(() => {
-      navigate("/dashboard"); // redirect to dashboard after 5s
-    }, 5000);
+    toast.success("Job Created Successfully!", {
+        autoClose: 5000,
+        onClose: () => {
+            window.location.replace("/jobs/list"); // full page redirect
+        },
+    });
 
   } catch (error) {
     toast.error(error.message || "Failed to create job");
