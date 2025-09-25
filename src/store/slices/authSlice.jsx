@@ -12,13 +12,12 @@ const initialState = {
 };
 
 
-// Login
 export const loginUser = createAsyncThunk("auth/loginUser", async ({ email, password }, thunkAPI) => {
     try {
         const response = await authInstance.post(endpoints.auth.loginUser, { email, password });
-        console.log(response)
         return response.data.data;
     } catch (err) {
+        console.log(err, 'err anil ')
         return thunkAPI.rejectWithValue({
             message: err?.response?.data?.message || err?.message || "Login failed",
             status: err?.response?.status,
